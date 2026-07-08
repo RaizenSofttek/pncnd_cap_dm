@@ -1,34 +1,51 @@
 #!/bin/sh
-# Restaura las credenciales de DB en package.json según la rama activa.
 BRANCH=$(git branch --show-current)
 PKG="$(git rev-parse --show-toplevel)/package.json"
 
-HOOK_PKG="$PKG" node -e '
-const fs   = require("fs");
-const pkg  = JSON.parse(fs.readFileSync(process.env.HOOK_PKG, "utf8"));
-const creds = pkg.cds.requires.db.credentials;
-const branch = process.env.GIT_BRANCH;
-
-if (branch === "DEV") {
-    creds.host     = "sqlnotas.postgres.database.azure.com";
-    creds.database = "notas";
-    creds.user     = "sap";
-    creds.password = "T69XgyE8%:u3";
-    creds.schema   = "notas";
-} else if (branch === "QAS") {
-    creds.host     = "sqlnotas.postgres.database.azure.com";
-    creds.database = "notas";
-    creds.user     = "sap";
-    creds.password = "T69XgyE8%:u3";
-    creds.schema   = "notas_qa";
-} else if (branch === "main") {
-    creds.host     = "notasprod.postgres.database.azure.com";
-    creds.database = "notas_prod";
-    creds.user     = "sapnotasprod";
-    creds.password = "XRgogaf7CKNw";
-    creds.schema   = "notasprod";
-}
-
-fs.writeFileSync(process.env.HOOK_PKG, JSON.stringify(pkg, null, 2) + "\n");
-console.log("[post-commit] Entorno restaurado → rama '"+ branch +"'");
-' GIT_BRANCH="$BRANCH"
+case "$BRANCH" in
+  DEV)
+    HOOK_PKG="$PKG" node -e '
+const fs = require("fs");
+const f  = JSON.parse(fs.readFileSync(process.env.HOOK_PKG, "utf8"));
+const c  = f.cds.requires.db.credentials;
+c.host     = "sqlnotas.postgres.database.azure.com";
+c.database = "notas";
+c.user     = "sap";
+c.password = "T69XgyE8%:u3";
+c.schema   = "notas";
+fs.writeFileSync(process.env.HOOK_PKG, JSON.stringify(f, null, 2) + "\n");
+console.log("[post-commit] Entorno restaurado → rama DEV");
+'
+    ;;
+  QAS)
+    HOOK_PKG="$PKG" node -e '
+const fs = require("fs");
+const f  = JSON.parse(fs.readFileSync(process.env.HOOK_PKG, "utf8"));
+const c  = f.cds.requires.db.credentials;
+c.host     = "sqlnotas.postgres.database.azure.com";
+c.database = "notas";
+c.user     = "sap";
+c.password = "T69XgyE8%:u3";
+c.schema   = "notas_qa";
+fs.writeFileSync(process.env.HOOK_PKG, JSON.stringify(f, null, 2) + "\n");
+console.log("[post-commit] Entorno restaurado → rama QAS");
+'
+    ;;
+  main)
+    HOOK_PKG="$PKG" node -e '
+const fs = require("fs");
+const f  = JSON.parse(fs.readFileSync(process.env.HOOK_PKG, "utf8"));
+const c  = f.cds.requires.db.credentials;
+c.host     = "notasprod.postgres.database.azure.com";
+c.database = "notas_prod";
+c.user     = "sapnotasprod";
+c.password = "XRgogaf7CKNw";
+c.schema   = "notasprod";
+fs.writeFileSync(process.env.HOOK_PKG, JSON.stringify(f, null, 2) + "\n");
+console.log("[post-commit] Entorno restaurado → rama main");
+'
+    ;;
+  *)
+    exit 0
+    ;;
+esac
