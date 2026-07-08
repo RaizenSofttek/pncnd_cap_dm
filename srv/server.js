@@ -8,7 +8,13 @@ const path  = require('path')
 // Si ca es un path relativo, lo resolvemos aquí antes de que el pool arranque.
 const ssl = cds.env.requires?.db?.credentials?.ssl
 if (ssl?.ca && typeof ssl.ca === 'string' && !ssl.ca.trimStart().startsWith('-----BEGIN')) {
-    ssl.ca = fs.readFileSync(path.resolve(process.cwd(), ssl.ca), 'utf8')
+    const certPath = path.resolve(process.cwd(), ssl.ca)
+    if (fs.existsSync(certPath)) {
+        ssl.ca = fs.readFileSync(certPath, 'utf8')
+    } else {
+        console.warn(`[server] SSL cert no encontrado en ${certPath} — se omite`)
+        delete ssl.ca
+    }
 }
 
 cds.on('bootstrap', app => {
