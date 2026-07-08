@@ -1,4 +1,4 @@
-namespace raizen;
+namespace my.raizen;
 
 @cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprobadores'
