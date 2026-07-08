@@ -1,0 +1,53 @@
+{
+  "name": "PNCND_CAP_DM",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@cap-js-community/odata-v2-adapter": "^1.15.12",
+    "@cap-js/postgres": "^2.3.0",
+    "@sap/cds": "^9",
+    "@sap/xssec": "^4.13.0"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^2.4",
+    "@sap/cds-dk": "^9"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch": "cds watch"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "postgres",
+        "impl": "@cap-js/postgres",
+        "dialect": "postgres",
+        "model": "db",
+        "credentials": {
+          "host": "sqlnotas.postgres.database.azure.com",
+          "port": 5432,
+          "database": "notas",
+          "user": "sap",
+          "password": "T69XgyE8%:u3",
+          "schema": "notas",
+          "ssl": {
+            "ca": "./srv/certs/Root_combined.pem",
+            "rejectUnauthorized": true
+          }
+        },
+        "pool": {
+          "min": 0,
+          "max": 10,
+          "acquireTimeoutMillis": 30000,
+          "idleTimeoutMillis": 10000,
+          "reapIntervalMillis": 1000,
+          "createTimeoutMillis": 10000,
+          "destroyTimeoutMillis": 5000
+        }
+      }
+    },
+    "auth": {
+      "auth": "dummy"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+_schema-version: 3.3.0
+ID: PNCND_CAP_DM
+version: 1.0.0
+description: "CAP project - PNCND Data Management"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+modules:
+  - name: PNCND_CAP_DM-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: PNCND_CAP_DM-auth
+      - name: PNCND_CAP_DM-connectivity
+      - name: PNCND_CAP_DM-destination
+
+resources:
+  - name: PNCND_CAP_DM-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+  - name: PNCND_CAP_DM-connectivity
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-plan: lite
+  - name: PNCND_CAP_DM-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite

@@ -1,0 +1,34 @@
+#!/bin/sh
+# Restaura las credenciales de DB en package.json según la rama activa.
+BRANCH=$(git branch --show-current)
+PKG="$(git rev-parse --show-toplevel)/package.json"
+
+HOOK_PKG="$PKG" node -e '
+const fs   = require("fs");
+const pkg  = JSON.parse(fs.readFileSync(process.env.HOOK_PKG, "utf8"));
+const creds = pkg.cds.requires.db.credentials;
+const branch = process.env.GIT_BRANCH;
+
+if (branch === "DEV") {
+    creds.host     = "sqlnotas.postgres.database.azure.com";
+    creds.database = "notas";
+    creds.user     = "sap";
+    creds.password = "T69XgyE8%:u3";
+    creds.schema   = "notas";
+} else if (branch === "QAS") {
+    creds.host     = "sqlnotas.postgres.database.azure.com";
+    creds.database = "notas";
+    creds.user     = "sap";
+    creds.password = "T69XgyE8%:u3";
+    creds.schema   = "notas_qa";
+} else if (branch === "main") {
+    creds.host     = "notasprod.postgres.database.azure.com";
+    creds.database = "notas_prod";
+    creds.user     = "sapnotasprod";
+    creds.password = "XRgogaf7CKNw";
+    creds.schema   = "notasprod";
+}
+
+fs.writeFileSync(process.env.HOOK_PKG, JSON.stringify(pkg, null, 2) + "\n");
+console.log("[post-commit] Entorno restaurado → rama '"+ branch +"'");
+' GIT_BRANCH="$BRANCH"
