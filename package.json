@@ -46,8 +46,8 @@
         }
       }
     },
-    "auth": {
-      "auth": "dummy"
+    "[production]": {
+      "auth": "xsuaa"
     }
   }
 }
