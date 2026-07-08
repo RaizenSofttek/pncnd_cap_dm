@@ -31,7 +31,7 @@
           "password": "T69XgyE8%:u3",
           "schema": "notas",
           "ssl": {
-            "ca": "./srv/certs/Root_combined.pem",
+            "ca": "./Root_combined.pem",
             "rejectUnauthorized": true
           }
         },
