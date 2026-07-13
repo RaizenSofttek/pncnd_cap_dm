@@ -46,8 +46,6 @@
         }
       }
     },
-    "auth": {
-      "auth": "dummy"
-    }
+    "auth": "dummy"
   }
 }
