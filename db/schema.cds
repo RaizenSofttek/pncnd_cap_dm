@@ -1,6 +1,14 @@
 namespace my.raizen;
 
 @cds.persistence.exists
+@cds.persistence.name: 'pncnd_tablas_maestras'
+@cds.persistence.schema: 'notas'
+entity PNCND_TABLAS_MAESTRAS {
+  key id_tabla      : String(30);
+      descripcion   : String(80);
+}
+
+@cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprobadores'
 @cds.persistence.schema: 'notas'
 entity PNCND_APROBADORES {
