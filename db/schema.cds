@@ -4,8 +4,11 @@ namespace my.raizen;
 @cds.persistence.name: 'pncnd_tablas_maestras'
 @cds.persistence.schema: 'notas'
 entity PNCND_TABLAS_MAESTRAS {
-  key id_tabla      : String(30);
-      descripcion   : String(80);
+  key id          : Integer;
+      nombre      : String(50);
+      descripcion : String(100);
+      fecha_inicio: Date;
+      fecha_fin   : Date;
 }
 
 @cds.persistence.exists
