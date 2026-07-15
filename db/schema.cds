@@ -43,3 +43,16 @@ entity PNCND_APROB_X_FUNCION {
   key nivel         : Integer;
       mail          : String(50);
 }
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_clientes'
+@cds.persistence.schema: 'notas'
+entity PNCND_CLIENTES {
+  key kunnr   : String(10); 
+  vkorg       : String(4);
+  vtweg       : String(2);
+  spart       : String(2);
+  vkbur       : String(4);
+  bran2       : String(10);
+  name1       : String(35);        
+}
