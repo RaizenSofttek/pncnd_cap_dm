@@ -2,7 +2,6 @@ namespace my.raizen;
 
 @cds.persistence.exists
 @cds.persistence.name: 'pncnd_tablas_maestras'
-@cds.persistence.schema: 'notas'
 entity PNCND_TABLAS_MAESTRAS {
   key id          : Integer;
       nombre      : String(50);
@@ -13,7 +12,6 @@ entity PNCND_TABLAS_MAESTRAS {
 
 @cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprobadores'
-@cds.persistence.schema: 'notas'
 entity PNCND_APROBADORES {
   key mail          : String(50);
       id_tipo_aprob : String(2);
@@ -22,7 +20,6 @@ entity PNCND_APROBADORES {
 
 @cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprob_x_of_ventas'
-@cds.persistence.schema: 'notas'
 entity PNCND_APROB_X_OF_VENTAS {
   key vkorg         : String(4);
   key vtweg         : String(2);
@@ -36,7 +33,6 @@ entity PNCND_APROB_X_OF_VENTAS {
 
 @cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprob_x_funcion'
-@cds.persistence.schema: 'notas'
 entity PNCND_APROB_X_FUNCION {
   key cod_concepto  : String(18);
   key id_tipo_aprob : String(2);
@@ -46,7 +42,6 @@ entity PNCND_APROB_X_FUNCION {
 
 @cds.persistence.exists
 @cds.persistence.name: 'pncnd_clientes'
-@cds.persistence.schema: 'notas'
 entity PNCND_CLIENTES {
   key kunnr   : String(10); 
   vkorg       : String(4);
