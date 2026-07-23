@@ -51,3 +51,69 @@ entity PNCND_CLIENTES {
   bran2       : String(10);
   name1       : String(35);        
 }
+
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_aprob_x_of_ventas_audit'
+entity PNCND_APROB_X_OF_VENTAS_AUDIT {
+  key id                   : Integer64;
+      vkorg_anterior       : String(4);
+      vtweg_anterior       : String(2);
+      spart_anterior       : String(2);
+      id_tipo_aprob_anterior: String(2);
+      nivel_anterior       : Integer;
+      vkbur_anterior       : String(4);
+      bran2_anterior       : String(10);
+      mail_anterior        : String(50);
+      vkorg_nuevo          : String(4);
+      vtweg_nuevo          : String(2);
+      spart_nuevo          : String(2);
+      id_tipo_aprob_nuevo  : String(2);
+      nivel_nuevo          : Integer;
+      vkbur_nuevo          : String(4);
+      bran2_nuevo          : String(10);
+      mail_nuevo           : String(50);
+      accion               : String(10);
+      fecha_modificacion   : Timestamp;
+      usuario_modificacion : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_aprob_x_funcion_audit'
+entity PNCND_APROB_X_FUNCION_AUDIT {
+  key id                    : Integer64;
+      cod_concepto_anterior : String(18);
+      id_tipo_aprob_anterior: String(2);
+      nivel_anterior        : Integer;
+      mail_anterior         : String(50);
+      cod_concepto_nuevo    : String(18);
+      id_tipo_aprob_nuevo   : String(2);
+      nivel_nuevo           : Integer;
+      mail_nuevo            : String(50);
+      accion                : String(10);
+      fecha_modificacion    : Timestamp;
+      usuario_modificacion  : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_clientes_audit'
+entity PNCND_CLIENTES_AUDIT {
+  key id                   : Integer64;
+      kunnr_anterior       : String(10);
+      vkorg_anterior       : String(4);
+      vtweg_anterior       : String(2);
+      spart_anterior       : String(2);
+      vkbur_anterior       : String(4);
+      bran2_anterior       : String(10);
+      name1_anterior       : String(35);
+      kunnr_nuevo          : String(10);
+      vkorg_nuevo          : String(4);
+      vtweg_nuevo          : String(2);
+      spart_nuevo          : String(2);
+      vkbur_nuevo          : String(4);
+      bran2_nuevo          : String(10);
+      name1_nuevo          : String(35);
+      accion               : String(10);
+      fecha_modificacion   : Timestamp;
+      usuario_modificacion : String(100);
+}
