@@ -52,6 +52,26 @@ entity PNCND_CLIENTES {
   name1       : String(35);        
 }
 
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_cod_concepto'
+entity PNCND_COD_CONCEPTO {
+  key cod_concepto  : String(18); 
+  descripcion       : String(40);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_tipos_aprob'
+entity PNCND_TIPOS_APROB {
+  key id_tipo_aprob   : String(2);
+  descripcion         : String(40);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_niveles'
+entity PNCND_NIVELES {
+  key nivel     : Integer; 
+  descripcion   : String(50);
+}
 
 @cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprob_x_of_ventas_audit'

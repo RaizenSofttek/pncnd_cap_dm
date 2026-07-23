@@ -9,4 +9,7 @@ service RaizenService {
     @readonly entity PNCND_APROB_X_OF_VENTAS_AUDIT as projection on db.PNCND_APROB_X_OF_VENTAS_AUDIT;
     @readonly entity PNCND_APROB_X_FUNCION_AUDIT   as projection on db.PNCND_APROB_X_FUNCION_AUDIT;
     @readonly entity PNCND_CLIENTES_AUDIT          as projection on db.PNCND_CLIENTES_AUDIT;
+    @readonly entity PNCND_COD_CONCEPTO            as projection on db.PNCND_COD_CONCEPTO;
+    @readonly entity PNCND_TIPOS_APROB             as projection on db.PNCND_TIPOS_APROB;
+    @readonly entity PNCND_NIVELES                 as projection on db.PNCND_NIVELES;
 }

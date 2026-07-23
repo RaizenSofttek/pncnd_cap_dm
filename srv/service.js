@@ -18,4 +18,7 @@ module.exports = cds.service.impl(async function () {
     require('./util/pncnd_aprob_x_of_ventas_audit')(this, T)
     require('./util/pncnd_aprob_x_funcion_audit')(this, T)
     require('./util/pncnd_clientes_audit')(this, T)
+    require('./util/pncnd_cod_concepto')(this, T)
+    require('./util/pncnd_tipos_aprob')(this, T)
+    require('./util/pncnd_niveles')(this, T)
 })
