@@ -1,4 +1,5 @@
-const { readFromTable } = require('../lib/readFromTable')
+const { readFromTable }     = require('../lib/readFromTable')
+const { registrarAuditoria } = require('./auditoria')
 
 module.exports = (srv, T) => {
 
@@ -37,5 +38,13 @@ module.exports = (srv, T) => {
         const db = await cds.connect.to('db')
         await db.run(`DELETE FROM ${T('pncnd_clientes')} WHERE kunnr = $1`, [kunnr])
         return req.data
+    })
+
+    registrarAuditoria(srv, {
+        entidad     : 'PNCND_CLIENTES',
+        tablaFuente : T('pncnd_clientes'),
+        tablaAudit  : T('pncnd_clientes_audit'),
+        claves      : ['kunnr'],
+        campos      : ['kunnr', 'vkorg', 'vtweg', 'spart', 'vkbur', 'bran2', 'name1']
     })
 }

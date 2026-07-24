@@ -1,4 +1,5 @@
-const { readFromTable } = require('../lib/readFromTable')
+const { readFromTable }     = require('../lib/readFromTable')
+const { registrarAuditoria } = require('./auditoria')
 
 module.exports = (srv, T) => {
 
@@ -36,5 +37,13 @@ module.exports = (srv, T) => {
             [cod_concepto, id_tipo_aprob, nivel]
         )
         return req.data
+    })
+
+    registrarAuditoria(srv, {
+        entidad     : 'PNCND_APROB_X_FUNCION',
+        tablaFuente : T('pncnd_aprob_x_funcion'),
+        tablaAudit  : T('pncnd_aprob_x_funcion_audit'),
+        claves      : ['cod_concepto', 'id_tipo_aprob', 'nivel'],
+        campos      : ['cod_concepto', 'id_tipo_aprob', 'nivel', 'mail']
     })
 }
