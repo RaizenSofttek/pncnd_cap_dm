@@ -65,7 +65,7 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
     srv.after('CREATE', entidad, async (_, req) => {
         const db      = await cds.connect.to('db')
         const usuario = req.user?.id || 'anonimo'
-        await _insertarAudit(db, tablaAudit, campos, null, req.data, 'CREAR', usuario)
+        await _insertarAudit(db, tablaAudit, campos, null, req.data, 'INSERT', usuario)
     })
 
     // ── AFTER UPDATE ──────────────────────────────────────────────────────
@@ -74,14 +74,14 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
         const usuario = req.user?.id || 'anonimo'
         // Re-leer el estado completo post-update (el PATCH puede ser parcial)
         const nuevo   = await _leerRegistro(db, tablaFuente, claves, req.data)
-        await _insertarAudit(db, tablaAudit, campos, req._auditPrev, nuevo, 'MODIFICAR', usuario)
+        await _insertarAudit(db, tablaAudit, campos, req._auditPrev, nuevo, 'UPDATE', usuario)
     })
 
     // ── AFTER DELETE ──────────────────────────────────────────────────────
     srv.after('DELETE', entidad, async (_, req) => {
         const db      = await cds.connect.to('db')
         const usuario = req.user?.id || 'anonimo'
-        await _insertarAudit(db, tablaAudit, campos, req._auditPrev, null, 'ELIMINAR', usuario)
+        await _insertarAudit(db, tablaAudit, campos, req._auditPrev, null, 'DELETE', usuario)
     })
 }
 
