@@ -24,12 +24,6 @@
         "dialect": "postgres",
         "model": "db",
         "credentials": {
-          "host": "sqlnotas.postgres.database.azure.com",
-          "port": 5432,
-          "database": "notas",
-          "user": "sap",
-          "password": "T69XgyE8%:u3",
-          "schema": "notas",
           "ssl": {
             "ca": "./Root_combined.pem",
             "rejectUnauthorized": true
