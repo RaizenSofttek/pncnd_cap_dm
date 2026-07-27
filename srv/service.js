@@ -53,12 +53,18 @@ module.exports = cds.service.impl(async function () {
     this.on('CREATE', 'PNCND_APROB_X_OF_VENTAS', async (req) => {
         const { vkorg, vtweg, spart, id_tipo_aprob, nivel, vkbur, bran2, mail } = req.data
         const db = await cds.connect.to('db')
-        await db.run(
-            `INSERT INTO ${T('pncnd_aprob_x_of_ventas')}
-                (vkorg, vtweg, spart, id_tipo_aprob, nivel, vkbur, bran2, mail)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            [vkorg, vtweg, spart, id_tipo_aprob, nivel, vkbur, bran2, mail]
-        )
+        try {
+            await db.run(
+                `INSERT INTO ${T('pncnd_aprob_x_of_ventas')}
+                    (vkorg, vtweg, spart, id_tipo_aprob, nivel, vkbur, bran2, mail)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                [vkorg, vtweg, spart, id_tipo_aprob, nivel, vkbur, bran2, mail]
+            )
+        } catch (e) {
+            if (e.code === '23505')
+                return req.error(409, `Clave duplicada: ya existe (${vkorg}/${vtweg}/${spart}/${id_tipo_aprob}/${nivel}/${vkbur}/${bran2})`)
+            throw e
+        }
         return req.data
     })
 
@@ -95,11 +101,17 @@ module.exports = cds.service.impl(async function () {
     this.on('CREATE', 'PNCND_APROB_X_FUNCION', async (req) => {
         const { cod_concepto, id_tipo_aprob, nivel, mail } = req.data
         const db = await cds.connect.to('db')
-        await db.run(
-            `INSERT INTO ${T('pncnd_aprob_x_funcion')} (cod_concepto, id_tipo_aprob, nivel, mail)
-             VALUES ($1, $2, $3, $4)`,
-            [cod_concepto, id_tipo_aprob, nivel, mail]
-        )
+        try {
+            await db.run(
+                `INSERT INTO ${T('pncnd_aprob_x_funcion')} (cod_concepto, id_tipo_aprob, nivel, mail)
+                 VALUES ($1, $2, $3, $4)`,
+                [cod_concepto, id_tipo_aprob, nivel, mail]
+            )
+        } catch (e) {
+            if (e.code === '23505')
+                return req.error(409, `Clave duplicada: ya existe (${cod_concepto}/${id_tipo_aprob}/${nivel})`)
+            throw e
+        }
         return req.data
     })
 
