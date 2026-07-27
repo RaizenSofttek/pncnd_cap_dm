@@ -25,7 +25,7 @@
         "model": "db",
         "credentials": {
           "ssl": {
-            "ca": "./Root_combined.pem",
+            "ca": "./srv/certs/Root_combined.pem",
             "rejectUnauthorized": true
           }
         },
