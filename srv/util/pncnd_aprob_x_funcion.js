@@ -8,11 +8,17 @@ module.exports = (srv, T) => {
     srv.on('CREATE', 'PNCND_APROB_X_FUNCION', async (req) => {
         const { cod_concepto, id_tipo_aprob, nivel, mail } = req.data
         const db = await cds.connect.to('db')
-        await db.run(
-            `INSERT INTO ${T('pncnd_aprob_x_funcion')} (cod_concepto, id_tipo_aprob, nivel, mail)
-             VALUES ($1, $2, $3, $4)`,
-            [cod_concepto, id_tipo_aprob, nivel, mail]
-        )
+        try {
+            await db.run(
+                `INSERT INTO ${T('pncnd_aprob_x_funcion')} (cod_concepto, id_tipo_aprob, nivel, mail)
+                 VALUES ($1, $2, $3, $4)`,
+                [cod_concepto, id_tipo_aprob, nivel, mail]
+            )
+        } catch (e) {
+            if (e.code === '23505')
+                return req.error(409, `Clave duplicada: ya existe (${cod_concepto}/${id_tipo_aprob}/${nivel})`)
+            throw e
+        }
         return req.data
     })
 
