@@ -13,6 +13,9 @@ const T = (tabla) => `${SCHEMA}.${tabla}`
 
 module.exports = cds.service.impl(async function () {
 
+    // ===== PNCND_TABLAS_MAESTRAS =====
+    this.on('READ', 'PNCND_TABLAS_MAESTRAS', (req) => readFromTable(T('pncnd_tablas_maestras'), req))
+
     // ===== PNCND_APROBADORES =====
     this.on('READ', 'PNCND_APROBADORES', (req) => readFromTable(T('pncnd_aprobadores'), req))
 
