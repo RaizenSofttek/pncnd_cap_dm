@@ -178,7 +178,15 @@ const readFromTable = async (sQualifiedTable, req) => {
 
         const data = await db.run(sql, params);
 
-        return data;
+        // Las tablas usan columnas CHAR(n) en PostgreSQL que rellenan con espacios.
+        // Aplicar trimEnd() a todos los valores string para limpiar ese padding.
+        return data.map(row => {
+            const clean = {};
+            for (const [k, v] of Object.entries(row)) {
+                clean[k] = typeof v === 'string' ? v.trimEnd() : v;
+            }
+            return clean;
+        });
     } catch (error) {
         req.error(500, `Error al obtener datos de ${sQualifiedTable}: ${error.message}`);
     }
