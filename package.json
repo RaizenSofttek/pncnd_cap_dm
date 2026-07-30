@@ -5,6 +5,9 @@
   "dependencies": {
     "@cap-js-community/odata-v2-adapter": "^1.15.12",
     "@cap-js/postgres": "^2.3.0",
+    "@sap-cloud-sdk/connectivity": "^4.7.0",
+    "@sap-cloud-sdk/http-client": "^4.7.0",
+    "@sap-cloud-sdk/resilience": "^4.7.0",
     "@sap/cds": "^9",
     "@sap/xssec": "^4.13.0"
   },

@@ -21,4 +21,16 @@ module.exports = cds.service.impl(async function () {
     require('./util/pncnd_cod_concepto')(this, T)
     require('./util/pncnd_tipos_aprob')(this, T)
     require('./util/pncnd_niveles')(this, T)
+
+    this.on('MisRoles', (req) => {
+        const payload = req.user?.tokenInfo?.payload || {}
+        return {
+            usuario:     payload.email || payload.user_name || req.user?.id || 'desconocido',
+            scopes:      payload.scope  || [],
+            given_name:  payload.given_name  || '',
+            family_name: payload.family_name || '',
+            client_id:   payload.client_id   || '',
+            zid:         payload.zid         || ''
+        }
+    })
 })
