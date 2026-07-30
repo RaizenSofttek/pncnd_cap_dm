@@ -37,6 +37,8 @@ resources:
       service: xsuaa
       service-plan: application
       path: ./xs-security.json
+      config:
+        tenant-mode: dedicated
   - name: PNCND_CAP_DM-connectivity
     type: org.cloudfoundry.managed-service
     parameters:
