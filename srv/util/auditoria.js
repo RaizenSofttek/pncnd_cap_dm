@@ -49,18 +49,15 @@ async function _insertarAudit(db, tablaAudit, campos, anterior, nuevo, accion, u
  * @param {string[]} cfg.claves       Campos que forman la clave primaria.
  * @param {string[]} cfg.campos       Todos los campos a auditar (claves + no-claves).
  */
-function _logUsuario(req, accion, entidad) {
-    const u = req.user
-    console.log('[AUDIT_USER_DEBUG]', JSON.stringify({
-        entidad,
-        accion,
-        id:              u?.id,
-        attr:            u?.attr,
-        authInfo:        u?.authInfo,
-        locale:          u?.locale,
-        tenant:          u?.tenant,
-        keys:            u ? Object.keys(u) : null,
-    }))
+function _getEmailUsuario(req) {
+    try {
+        const jwt = req.user?.authInfo?.config?.jwt
+        if (!jwt) return null
+        const payload = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64').toString('utf8'))
+        return payload.email || null
+    } catch {
+        return null
+    }
 }
 
 function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, campos }) {
@@ -77,17 +74,17 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
 
     // ── AFTER CREATE ──────────────────────────────────────────────────────
     srv.after('CREATE', entidad, async (_, req) => {
-        _logUsuario(req, 'CREATE', entidad)
+
         const db      = await cds.connect.to('db')
-        const usuario = req.user?.id || 'anonimo'
+        const usuario = _getEmailUsuario(req) || req.user?.id || 'anonimo'
         await _insertarAudit(db, tablaAudit, campos, null, req.data, 'INSERT', usuario)
     })
 
     // ── AFTER UPDATE ──────────────────────────────────────────────────────
     srv.after('UPDATE', entidad, async (_, req) => {
-        _logUsuario(req, 'UPDATE', entidad)
+
         const db      = await cds.connect.to('db')
-        const usuario = req.user?.id || 'anonimo'
+        const usuario = _getEmailUsuario(req) || req.user?.id || 'anonimo'
         // Re-leer el estado completo post-update (el PATCH puede ser parcial)
         const nuevo   = await _leerRegistro(db, tablaFuente, claves, req.data)
         await _insertarAudit(db, tablaAudit, campos, req._auditPrev, nuevo, 'UPDATE', usuario)
@@ -95,9 +92,9 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
 
     // ── AFTER DELETE ──────────────────────────────────────────────────────
     srv.after('DELETE', entidad, async (_, req) => {
-        _logUsuario(req, 'DELETE', entidad)
+
         const db      = await cds.connect.to('db')
-        const usuario = req.user?.id || 'anonimo'
+        const usuario = _getEmailUsuario(req) || req.user?.id || 'anonimo'
         await _insertarAudit(db, tablaAudit, campos, req._auditPrev, null, 'DELETE', usuario)
     })
 }
