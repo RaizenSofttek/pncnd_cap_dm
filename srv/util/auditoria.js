@@ -49,6 +49,22 @@ async function _insertarAudit(db, tablaAudit, campos, anterior, nuevo, accion, u
  * @param {string[]} cfg.claves       Campos que forman la clave primaria.
  * @param {string[]} cfg.campos       Todos los campos a auditar (claves + no-claves).
  */
+function _logUsuario(req, accion, entidad) {
+    const u = req.user
+    console.log('[AUDIT_USER_DEBUG]', JSON.stringify({
+        entidad,
+        accion,
+        id:              u?.id,
+        attr:            u?.attr,
+        roles:           u?.roles,
+        locale:          u?.locale,
+        tenant:          u?.tenant,
+        tokenInfo:       u?.tokenInfo,
+        _privileges:     u?._privileges,
+        keys:            u ? Object.keys(u) : null,
+    }))
+}
+
 function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, campos }) {
 
     // ── BEFORE UPDATE / DELETE: capturar estado previo ────────────────────
@@ -63,6 +79,7 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
 
     // ── AFTER CREATE ──────────────────────────────────────────────────────
     srv.after('CREATE', entidad, async (_, req) => {
+        _logUsuario(req, 'CREATE', entidad)
         const db      = await cds.connect.to('db')
         const usuario = req.user?.id || 'anonimo'
         await _insertarAudit(db, tablaAudit, campos, null, req.data, 'INSERT', usuario)
@@ -70,6 +87,7 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
 
     // ── AFTER UPDATE ──────────────────────────────────────────────────────
     srv.after('UPDATE', entidad, async (_, req) => {
+        _logUsuario(req, 'UPDATE', entidad)
         const db      = await cds.connect.to('db')
         const usuario = req.user?.id || 'anonimo'
         // Re-leer el estado completo post-update (el PATCH puede ser parcial)
@@ -79,6 +97,7 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
 
     // ── AFTER DELETE ──────────────────────────────────────────────────────
     srv.after('DELETE', entidad, async (_, req) => {
+        _logUsuario(req, 'DELETE', entidad)
         const db      = await cds.connect.to('db')
         const usuario = req.user?.id || 'anonimo'
         await _insertarAudit(db, tablaAudit, campos, req._auditPrev, null, 'DELETE', usuario)
