@@ -56,11 +56,9 @@ function _logUsuario(req, accion, entidad) {
         accion,
         id:              u?.id,
         attr:            u?.attr,
-        roles:           u?.roles,
+        authInfo:        u?.authInfo,
         locale:          u?.locale,
         tenant:          u?.tenant,
-        tokenInfo:       u?.tokenInfo,
-        _privileges:     u?._privileges,
         keys:            u ? Object.keys(u) : null,
     }))
 }
