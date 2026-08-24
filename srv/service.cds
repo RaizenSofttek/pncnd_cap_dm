@@ -12,6 +12,8 @@ service RaizenService {
     @readonly entity PNCND_COD_CONCEPTO            as projection on db.PNCND_COD_CONCEPTO;
     @readonly entity PNCND_TIPOS_APROB             as projection on db.PNCND_TIPOS_APROB;
     @readonly entity PNCND_NIVELES                 as projection on db.PNCND_NIVELES;
+    entity PNCND_REL_CONC_MOA                      as projection on db.PNCND_REL_CONC_MOA;
+    entity PNCND_REL_CONC_TIPO_DOC                 as projection on db.PNCND_REL_CONC_TIPO_DOC;
 
     @open type UserInfo {};
     function MisRoles() returns UserInfo;
