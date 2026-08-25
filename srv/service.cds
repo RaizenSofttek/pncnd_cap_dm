@@ -12,6 +12,9 @@ service RaizenService {
     entity PNCND_COD_CONCEPTO                      as projection on db.PNCND_COD_CONCEPTO;
     @readonly entity PNCND_TIPOS_APROB             as projection on db.PNCND_TIPOS_APROB;
     @readonly entity PNCND_NIVELES                 as projection on db.PNCND_NIVELES;
+    @readonly entity PNCND_TIPO_DOC                as projection on db.PNCND_TIPO_DOC;
+    @readonly entity PNCND_TIPO_OPERACION          as projection on db.PNCND_TIPO_OPERACION;
+    @readonly entity PNCND_LINEA_MOA               as projection on db.PNCND_LINEA_MOA;
     entity PNCND_REL_CONC_MOA                      as projection on db.PNCND_REL_CONC_MOA;
     entity PNCND_REL_CONC_TIPO_DOC                 as projection on db.PNCND_REL_CONC_TIPO_DOC;
     @readonly entity PNCND_REL_CONC_MOA_AUDIT      as projection on db.PNCND_REL_CONC_MOA_AUDIT;
