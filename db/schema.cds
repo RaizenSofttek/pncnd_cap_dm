@@ -74,6 +74,27 @@ entity PNCND_NIVELES {
 }
 
 @cds.persistence.exists
+@cds.persistence.name: 'pncnd_tipo_doc'
+entity PNCND_TIPO_DOC {
+  key id_tipo_doc : String(2);
+  descripcion     : String(40);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_tipo_operacion'
+entity PNCND_TIPO_OPERACION {
+  key id_tipo_op  : String(14); 
+  descripcion     : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_linea_moa'
+entity PNCND_LINEA_MOA {
+  key linea_moa  : String(10); 
+  descripcion     : String(100);
+}
+
+@cds.persistence.exists
 @cds.persistence.name: 'pncnd_rel_conc_moa'
 entity PNCND_REL_CONC_MOA {
   key cod_concepto    : String(18);
