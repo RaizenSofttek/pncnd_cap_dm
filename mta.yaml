@@ -10,6 +10,7 @@ build-parameters:
       commands:
         - npm ci
         - npx cds build --production
+        - cp Root_combined.pem gen/srv/
 modules:
   - name: PNCND_CAP_DM-srv
     type: nodejs

@@ -1,7 +1,6 @@
 {
   "name": "PNCND_CAP_DM",
   "version": "1.0.0",
-  "private": true,
   "dependencies": {
     "@cap-js-community/odata-v2-adapter": "^1.15.12",
     "@cap-js/postgres": "^2.3.0",
@@ -25,10 +24,9 @@
         "kind": "postgres",
         "impl": "@cap-js/postgres",
         "dialect": "postgres",
-        "model": "db",
         "credentials": {
           "ssl": {
-            "ca": "./srv/certs/Root_combined.pem",
+            "ca": "./Root_combined.pem",
             "rejectUnauthorized": true
           }
         },

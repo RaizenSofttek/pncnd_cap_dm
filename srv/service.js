@@ -21,6 +21,14 @@ module.exports = cds.service.impl(async function () {
     require('./util/pncnd_cod_concepto')(this, T)
     require('./util/pncnd_tipos_aprob')(this, T)
     require('./util/pncnd_niveles')(this, T)
+    require('./util/pncnd_tipo_doc')(this, T)
+    require('./util/pncnd_tipo_operacion')(this, T)
+    require('./util/pncnd_linea_moa')(this, T)
+    require('./util/pncnd_rel_conc_moa')(this, T)
+    require('./util/pncnd_rel_conc_tipo_doc')(this, T)
+    require('./util/pncnd_rel_conc_moa_audit')(this, T)
+    require('./util/pncnd_rel_conc_tipo_doc_audit')(this, T)
+    require('./util/pncnd_cod_concepto_audit')(this, T)
 
     this.on('MisRoles', (req) => {
         const payload = req.user?.tokenInfo?.payload || {}

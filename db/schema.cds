@@ -74,6 +74,46 @@ entity PNCND_NIVELES {
 }
 
 @cds.persistence.exists
+@cds.persistence.name: 'pncnd_tipo_doc'
+entity PNCND_TIPO_DOC {
+  key id_tipo_doc : String(2);
+  descripcion     : String(40);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_tipo_operacion'
+entity PNCND_TIPO_OPERACION {
+  key id_tipo_op  : String(14); 
+  descripcion     : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_linea_moa'
+entity PNCND_LINEA_MOA {
+  key linea_moa  : String(10); 
+  descripcion     : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_rel_conc_moa'
+entity PNCND_REL_CONC_MOA {
+  key cod_concepto    : String(18);
+  key id_tipo_op      : String(14); 
+  key linea_moa       : String(10);  
+      nombre          : String(40); 
+      clasificacion   : String(40); 
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_rel_conc_tipo_doc'
+entity PNCND_REL_CONC_TIPO_DOC {
+  key cod_concepto  : String(18);
+  key id_tipo_op    : String(14);
+  key id_tipo_doc   : String(2);
+  key linea_moa     : String(10); 
+}
+
+@cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprob_x_of_ventas_audit'
 entity PNCND_APROB_X_OF_VENTAS_AUDIT {
   key id                   : Integer64;
@@ -136,4 +176,53 @@ entity PNCND_CLIENTES_AUDIT {
       accion               : String(10);
       fecha_modificacion   : Timestamp;
       usuario_modificacion : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_rel_conc_moa_audit'
+entity PNCND_REL_CONC_MOA_AUDIT {
+  key id                     : Integer64;
+      cod_concepto_anterior  : String(18);
+      id_tipo_op_anterior    : String(14);
+      linea_moa_anterior     : String(10);
+      nombre_anterior        : String(40);
+      clasificacion_anterior : String(40);
+      cod_concepto_nuevo     : String(18);
+      id_tipo_op_nuevo       : String(14);
+      linea_moa_nuevo        : String(10);
+      nombre_nuevo           : String(40);
+      clasificacion_nuevo    : String(40);
+      accion                 : String(10);
+      fecha_modificacion     : Timestamp;
+      usuario_modificacion   : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_rel_conc_tipo_doc_audit'
+entity PNCND_REL_CONC_TIPO_DOC_AUDIT {
+  key id                     : Integer64;
+      cod_concepto_anterior  : String(18);
+      id_tipo_op_anterior    : String(14);
+      id_tipo_doc_anterior   : String(2);
+      linea_moa_anterior     : String(10);
+      cod_concepto_nuevo     : String(18);
+      id_tipo_op_nuevo       : String(14);
+      id_tipo_doc_nuevo      : String(2);
+      linea_moa_nuevo        : String(10);
+      accion                 : String(10);
+      fecha_modificacion     : Timestamp;
+      usuario_modificacion   : String(100);
+}
+
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_cod_concepto_audit'
+entity PNCND_COD_CONCEPTO_AUDIT {
+  key id                     : Integer64;
+      cod_concepto_anterior  : String(18);
+      descripcion_anterior   : String(40);
+      cod_concepto_nuevo     : String(18);
+      descripcion_nuevo      : String(40);
+      accion                 : String(10);
+      fecha_modificacion     : Timestamp;
+      usuario_modificacion   : String(100);
 }

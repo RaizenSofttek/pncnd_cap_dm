@@ -9,9 +9,17 @@ service RaizenService {
     @readonly entity PNCND_APROB_X_OF_VENTAS_AUDIT as projection on db.PNCND_APROB_X_OF_VENTAS_AUDIT;
     @readonly entity PNCND_APROB_X_FUNCION_AUDIT   as projection on db.PNCND_APROB_X_FUNCION_AUDIT;
     @readonly entity PNCND_CLIENTES_AUDIT          as projection on db.PNCND_CLIENTES_AUDIT;
-    @readonly entity PNCND_COD_CONCEPTO            as projection on db.PNCND_COD_CONCEPTO;
+    entity PNCND_COD_CONCEPTO                      as projection on db.PNCND_COD_CONCEPTO;
     @readonly entity PNCND_TIPOS_APROB             as projection on db.PNCND_TIPOS_APROB;
     @readonly entity PNCND_NIVELES                 as projection on db.PNCND_NIVELES;
+    @readonly entity PNCND_TIPO_DOC                as projection on db.PNCND_TIPO_DOC;
+    @readonly entity PNCND_TIPO_OPERACION          as projection on db.PNCND_TIPO_OPERACION;
+    @readonly entity PNCND_LINEA_MOA               as projection on db.PNCND_LINEA_MOA;
+    entity PNCND_REL_CONC_MOA                      as projection on db.PNCND_REL_CONC_MOA;
+    entity PNCND_REL_CONC_TIPO_DOC                 as projection on db.PNCND_REL_CONC_TIPO_DOC;
+    @readonly entity PNCND_REL_CONC_MOA_AUDIT      as projection on db.PNCND_REL_CONC_MOA_AUDIT;
+    @readonly entity PNCND_REL_CONC_TIPO_DOC_AUDIT as projection on db.PNCND_REL_CONC_TIPO_DOC_AUDIT;
+    @readonly entity PNCND_COD_CONCEPTO_AUDIT      as projection on db.PNCND_COD_CONCEPTO_AUDIT;
 
     @open type UserInfo {};
     function MisRoles() returns UserInfo;
