@@ -21,6 +21,22 @@ service RaizenService {
     @readonly entity PNCND_REL_CONC_TIPO_DOC_AUDIT as projection on db.PNCND_REL_CONC_TIPO_DOC_AUDIT;
     @readonly entity PNCND_COD_CONCEPTO_AUDIT      as projection on db.PNCND_COD_CONCEPTO_AUDIT;
 
+    //APP MODIFICAR APROBADORES V2 (con smartTable)
+    entity PNCND_APROB_X_PROPUESTA as projection on db.PNCND_APROB_X_PROPUESTA;
+
+    entity ModificarAprobadorResult {
+        key mensaje : String(250);
+    }
+
+    action modificarAprobador(
+        id_propuesta : Integer,
+        id_lote      : Integer,
+        nivel        : Integer,
+        orden        : Integer,
+        mail         : String,
+        mail_mod     : String
+    ) returns ModificarAprobadorResult;
+
     @open type UserInfo {};
     function MisRoles() returns UserInfo;
 }

@@ -30,6 +30,8 @@ module.exports = cds.service.impl(async function () {
     require('./util/pncnd_rel_conc_tipo_doc_audit')(this, T)
     require('./util/pncnd_cod_concepto_audit')(this, T)
 
+    require('./util/pncnd_aprob_x_propuesta')(this, T)
+
     this.on('MisRoles', (req) => {
         const payload = req.user?.tokenInfo?.payload || {}
         return {
