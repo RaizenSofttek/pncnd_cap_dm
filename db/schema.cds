@@ -226,3 +226,19 @@ entity PNCND_COD_CONCEPTO_AUDIT {
       fecha_modificacion     : Timestamp;
       usuario_modificacion   : String(100);
 }
+
+@cds.persistence.skip
+@cds.persistence.name: 'pncnd_aprob_x_propuesta'
+entity PNCND_APROB_X_PROPUESTA {
+  key id_propuesta  : Integer;
+  key id_lote       : Integer;
+  key nivel         : Integer;
+  key orden         : Integer;
+      fecha_oper    : Date @odata.Type:'Edm.String'; 
+      hora_oper     : String(8);
+      id_tipo_aprob : String(2);
+      mail          : String(50);
+      mail_mod      : String(50);
+      fecha_mod     : Date @odata.Type:'Edm.String';  
+      aprobado      : String(1);
+}
