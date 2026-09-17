@@ -41,6 +41,11 @@
         }
       }
     },
+    "query": {
+      "limit": {
+        "max": 5000
+      }
+    },
     "[production]": {
       "auth": "xsuaa"
     }

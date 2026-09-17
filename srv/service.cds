@@ -37,6 +37,24 @@ service RaizenService {
         mail_mod     : String
     ) returns ModificarAprobadorResult;
 
+    entity MailAprobadorType {
+        key mail : String(100);
+    }
+
+    function getMailsPendientes() returns array of MailAprobadorType;
+
+    entity ModificarMasivoResult {
+        key modificados : Integer;
+            sinCambios  : Integer;
+    }
+
+    // claves: "id_propuesta-id_lote-nivel-orden;..." (OData V2 no admite arrays
+    // como parámetro; mismo encoding que usa UpdatePropuesta en SERVICIO_CAP)
+    action modificarAprobadoresMasivo(
+        claves : String,
+        mail   : String
+    ) returns ModificarMasivoResult;
+
     @open type UserInfo {};
     function MisRoles() returns UserInfo;
 }

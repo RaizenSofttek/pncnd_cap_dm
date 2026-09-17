@@ -171,9 +171,19 @@ const readFromTable = async (sQualifiedTable, req) => {
             }
             const countRows = await db.run(countSql, countParams);
             const iTotal = parseInt(countRows[0].cnt, 10) || 0;
-            // Formato esperado por @sap/cds para inline/explicit count:
-            // [{ counted: <n> }] → llena @odata.count / d.__count.
-            return [{ counted: iTotal }];
+
+            // GET .../$count responde el número en texto plano: el adaptador espera
+            // el valor, no una fila. Devolver [{ counted: n }] hacía que respondiera
+            // 0 y la tabla creyera que no hay registros, quedándose sin botón "Más"
+            // ni total en la cabecera aunque los datos llegaran bien.
+            if (bCountFunc || req._?.odataReq?._url?.path?.includes('/$count')) {
+                return iTotal;
+            }
+
+            // $inlinecount: CAP espera las filas con el total adjunto, no solo el total
+            const aVacio = [];
+            aVacio.$count = iTotal;
+            return aVacio;
         }
 
         const data = await db.run(sql, params);
