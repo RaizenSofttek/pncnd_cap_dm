@@ -37,6 +37,12 @@ service RaizenService {
         mail_mod     : String
     ) returns ModificarAprobadorResult;
 
+    entity MailAprobadorType {
+        key mail : String(100);
+    }
+
+    function getMailsPendientes() returns array of MailAprobadorType;
+
     @open type UserInfo {};
     function MisRoles() returns UserInfo;
 }

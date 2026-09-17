@@ -4,7 +4,26 @@ const { registrarAuditoria } = require('./auditoria')
 module.exports = (srv, T) => {
 
     srv.on('READ', 'PNCND_APROB_X_PROPUESTA', (req) => readFromTable(T('pncnd_aprob_x_propuesta'), req))
-    
+
+    // Evita que el front descargue todos los pendientes solo para extraer los
+    // mails distintos del filtro: el DISTINCT se resuelve en la base.
+    srv.on('getMailsPendientes', async (req) => {
+        try {
+            const rows = await cds.db.run(
+                `SELECT DISTINCT LOWER(RTRIM(mail)) AS mail
+                 FROM ${T('pncnd_aprob_x_propuesta')}
+                 WHERE aprobado = 'N'
+                   AND mail IS NOT NULL
+                   AND RTRIM(mail) <> ''
+                 ORDER BY mail`
+            )
+            return rows || []
+        } catch (error) {
+            return req.error(500, `Error al obtener mails pendientes: ${error.message}`)
+        }
+    })
+
+
     srv.on('modificarAprobador', async (req) => {
         const { id_propuesta, id_lote, nivel, orden, mail, mail_mod } = req.data;
     
