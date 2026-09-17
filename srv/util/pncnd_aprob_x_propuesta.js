@@ -63,16 +63,28 @@ module.exports = (srv, T) => {
             return `($${i - 3}::int, $${i - 2}::int, $${i - 1}::int, $${i}::int)`
         }).join(', ')
 
+        // Misma condición para contar y para actualizar
+        const sWhere = `WHERE (id_propuesta, id_lote, nivel, orden) IN (${sTuplas})
+                          AND RTRIM(mail) <> $1`
+
         try {
+            // db.run sobre un UPDATE crudo no devuelve un contador confiable, así que
+            // el conteo sale de un SELECT previo. Ambas corren en la transacción que
+            // CAP abre por request, de modo que nadie puede modificar nada en el medio.
+            const aConteo = await cds.db.run(
+                `SELECT COUNT(*) AS cnt FROM ${T('pncnd_aprob_x_propuesta')} ${sWhere}`,
+                params
+            )
+            const iModificados = parseInt(aConteo?.[0]?.cnt, 10) || 0
+
             // mail_mod toma el valor previo de la propia columna; el <> filtra
             // los que ya tenían ese aprobador sin necesidad de chequearlo antes
-            const iModificados = await cds.db.run(
+            await cds.db.run(
                 `UPDATE ${T('pncnd_aprob_x_propuesta')}
                  SET mail_mod  = mail,
                      mail      = $1,
                      fecha_mod = $2
-                 WHERE (id_propuesta, id_lote, nivel, orden) IN (${sTuplas})
-                   AND RTRIM(mail) <> $1`,
+                 ${sWhere}`,
                 params
             )
 
