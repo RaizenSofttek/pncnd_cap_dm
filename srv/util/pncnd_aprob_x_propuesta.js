@@ -24,6 +24,68 @@ module.exports = (srv, T) => {
     })
 
 
+    // Un solo UPDATE por lote en lugar de una request por registro. CAP envuelve
+    // cada handler en su propia transacción, así que el lote es todo o nada.
+    srv.on('modificarAprobadoresMasivo', async (req) => {
+        const { claves, mail } = req.data
+
+        if (!claves || !mail) {
+            return req.error(400, 'Faltan parámetros requeridos')
+        }
+
+        const aClaves = claves
+            .split(';')
+            .filter(Boolean)
+            .map((sClave) => sClave.split('-').map(Number))
+
+        if (!aClaves.length) {
+            return req.error(400, 'No se recibieron claves')
+        }
+
+        const bInvalidas = aClaves.some(
+            (a) => a.length !== 4 || a.some((n) => !Number.isInteger(n))
+        )
+        if (bInvalidas) {
+            return req.error(400, 'Formato de claves inválido')
+        }
+
+        const fecha_mod = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'America/Argentina/Buenos_Aires',
+            year:     'numeric',
+            month:    '2-digit',
+            day:      '2-digit'
+        }).format(new Date())
+
+        const params = [mail, fecha_mod]
+        const sTuplas = aClaves.map((aClave) => {
+            params.push(...aClave)
+            const i = params.length
+            return `($${i - 3}::int, $${i - 2}::int, $${i - 1}::int, $${i}::int)`
+        }).join(', ')
+
+        try {
+            // mail_mod toma el valor previo de la propia columna; el <> filtra
+            // los que ya tenían ese aprobador sin necesidad de chequearlo antes
+            const iModificados = await cds.db.run(
+                `UPDATE ${T('pncnd_aprob_x_propuesta')}
+                 SET mail_mod  = mail,
+                     mail      = $1,
+                     fecha_mod = $2
+                 WHERE (id_propuesta, id_lote, nivel, orden) IN (${sTuplas})
+                   AND RTRIM(mail) <> $1`,
+                params
+            )
+
+            return {
+                modificados: iModificados,
+                sinCambios : aClaves.length - iModificados
+            }
+
+        } catch (error) {
+            return req.error(500, `Error al modificar el lote: ${error.message}`)
+        }
+    })
+
     srv.on('modificarAprobador', async (req) => {
         const { id_propuesta, id_lote, nivel, orden, mail, mail_mod } = req.data;
     
