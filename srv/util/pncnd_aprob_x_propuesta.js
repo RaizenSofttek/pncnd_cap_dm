@@ -56,10 +56,13 @@ module.exports = (srv, T) => {
             day:      '2-digit'
         }).format(new Date())
 
-        const params = [mail, fecha_mod]
+        // $1 es el mail; las claves ocupan de $2 en adelante. fecha_mod va al final
+        // y solo en el UPDATE: PostgreSQL falla con "could not determine data type"
+        // si una consulta recibe un parámetro que nunca referencia.
+        const aClavesPlanas = []
         const sTuplas = aClaves.map((aClave) => {
-            params.push(...aClave)
-            const i = params.length
+            aClavesPlanas.push(...aClave)
+            const i = aClavesPlanas.length + 1
             return `($${i - 3}::int, $${i - 2}::int, $${i - 1}::int, $${i}::int)`
         }).join(', ')
 
@@ -67,13 +70,16 @@ module.exports = (srv, T) => {
         const sWhere = `WHERE (id_propuesta, id_lote, nivel, orden) IN (${sTuplas})
                           AND RTRIM(mail) <> $1`
 
+        const aParamsConteo = [mail, ...aClavesPlanas]
+        const aParamsUpdate = [...aParamsConteo, fecha_mod]
+
         try {
             // db.run sobre un UPDATE crudo no devuelve un contador confiable, así que
             // el conteo sale de un SELECT previo. Ambas corren en la transacción que
             // CAP abre por request, de modo que nadie puede modificar nada en el medio.
             const aConteo = await cds.db.run(
                 `SELECT COUNT(*) AS cnt FROM ${T('pncnd_aprob_x_propuesta')} ${sWhere}`,
-                params
+                aParamsConteo
             )
             const iModificados = parseInt(aConteo?.[0]?.cnt, 10) || 0
 
@@ -83,9 +89,9 @@ module.exports = (srv, T) => {
                 `UPDATE ${T('pncnd_aprob_x_propuesta')}
                  SET mail_mod  = mail,
                      mail      = $1,
-                     fecha_mod = $2
+                     fecha_mod = $${aParamsUpdate.length}
                  ${sWhere}`,
-                params
+                aParamsUpdate
             )
 
             return {
