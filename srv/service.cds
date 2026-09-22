@@ -24,6 +24,8 @@ service RaizenService {
     //APP MODIFICAR APROBADORES V2 (con smartTable)
     entity PNCND_APROB_X_PROPUESTA as projection on db.PNCND_APROB_X_PROPUESTA;
 
+    @readonly entity PNCND_APROB_X_PROPUESTA_AUDIT as projection on db.PNCND_APROB_X_PROPUESTA_AUDIT;
+
     entity ModificarAprobadorResult {
         key mensaje : String(250);
     }
