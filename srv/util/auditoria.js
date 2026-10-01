@@ -19,21 +19,64 @@ async function _leerRegistro(db, tablaFuente, claves, data) {
  * No incluye `id` — lo genera PostgreSQL (BIGSERIAL).
  */
 async function _insertarAudit(db, tablaAudit, campos, anterior, nuevo, accion, usuario) {
+    await insertarAuditoria(db, {
+        tablaAudit,
+        campos,
+        filas: [{ anterior, nuevo }],
+        accion,
+        usuario
+    })
+}
+
+/**
+ * Inserta una o varias filas de auditoría en un solo INSERT.
+ *
+ * Además del formato por defecto (solo pares _anterior/_nuevo), admite tablas
+ * que guardan la clave del registro auditado como columnas planas: es el caso
+ * de pncnd_aprob_x_propuesta_audit, que conserva id_propuesta/id_lote/nivel/
+ * orden sin versionar y versiona únicamente los campos no clave.
+ *
+ * Pensado para ser llamado también desde actions con SQL propio, donde los
+ * hooks de entidad de registrarAuditoria nunca se disparan.
+ *
+ * @param {object}   db                  Conexión (cds.db o la del handler).
+ * @param {string}   cfg.tablaAudit      Tabla audit con schema.
+ * @param {string[]} [cfg.columnasClave] Columnas de clave guardadas sin versionar.
+ * @param {string[]} cfg.campos          Campos versionados en pares _anterior/_nuevo.
+ * @param {object[]} cfg.filas           [{ anterior, nuevo }] — uno por registro.
+ * @param {string}   cfg.accion          INSERT | UPDATE | DELETE.
+ * @param {string}   cfg.usuario         Mail del usuario que modificó.
+ */
+async function insertarAuditoria(db, { tablaAudit, columnasClave = [], campos, filas, accion, usuario }) {
+    if (!filas?.length) return
+
     const cols = [
+        ...columnasClave,
         ...campos.map(c => `${c}_anterior`),
         ...campos.map(c => `${c}_nuevo`),
         'accion', 'fecha_modificacion', 'usuario_modificacion'
     ]
-    const vals = [
-        ...campos.map(c => anterior?.[c] ?? null),
-        ...campos.map(c => nuevo?.[c]     ?? null),
-        accion,
-        new Date(),
-        usuario || 'anonimo'
-    ]
-    const ph = vals.map((_, i) => `$${i + 1}`).join(', ')
+
+    const fecha = new Date()
+    const vals = []
+    const aTuplas = filas.map(({ anterior, nuevo }) => {
+        // La clave es la misma antes y después: se toma de donde haya dato
+        const oClave = anterior || nuevo || {}
+        const aFila = [
+            ...columnasClave.map(k => oClave[k] ?? null),
+            ...campos.map(c => anterior?.[c] ?? null),
+            ...campos.map(c => nuevo?.[c]     ?? null),
+            accion,
+            fecha,
+            usuario || 'anonimo'
+        ]
+        const iBase = vals.length
+        vals.push(...aFila)
+        return '(' + aFila.map((_, i) => `$${iBase + i + 1}`).join(', ') + ')'
+    })
+
     await db.run(
-        `INSERT INTO ${tablaAudit} (${cols.join(', ')}) VALUES (${ph})`,
+        `INSERT INTO ${tablaAudit} (${cols.join(', ')}) VALUES ${aTuplas.join(', ')}`,
         vals
     )
 }
@@ -99,4 +142,4 @@ function registrarAuditoria(srv, { entidad, tablaFuente, tablaAudit, claves, cam
     })
 }
 
-module.exports = { registrarAuditoria }
+module.exports = { registrarAuditoria, insertarAuditoria, getEmailUsuario: _getEmailUsuario }
