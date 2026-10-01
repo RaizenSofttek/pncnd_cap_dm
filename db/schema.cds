@@ -234,11 +234,40 @@ entity PNCND_APROB_X_PROPUESTA {
   key id_lote       : Integer;
   key nivel         : Integer;
   key orden         : Integer;
-      fecha_oper    : Date @odata.Type:'Edm.String'; 
+      fecha_oper    : Date @odata.Type:'Edm.String';
       hora_oper     : String(8);
       id_tipo_aprob : String(2);
       mail          : String(50);
       mail_mod      : String(50);
-      fecha_mod     : Date @odata.Type:'Edm.String';  
+      fecha_mod     : Date @odata.Type:'Edm.String';
       aprobado      : String(1);
+}
+
+// A diferencia del resto de las audit, conserva la clave del registro auditado
+// como columnas propias y versiona solo los campos no clave.
+@cds.persistence.exists
+@cds.persistence.name: 'pncnd_aprob_x_propuesta_audit'
+entity PNCND_APROB_X_PROPUESTA_AUDIT {
+  key id                      : Integer64;
+      id_propuesta            : Integer;
+      id_lote                 : Integer;
+      nivel                   : Integer;
+      orden                   : Integer;
+      id_tipo_aprob_anterior  : String(2);
+      mail_anterior           : String(50);
+      mail_mod_anterior       : String(50);
+      fecha_mod_anterior      : Date @odata.Type:'Edm.String';
+      aprobado_anterior       : String(1);
+      fecha_oper_anterior     : Date @odata.Type:'Edm.String';
+      hora_oper_anterior      : String(8);
+      id_tipo_aprob_nuevo     : String(2);
+      mail_nuevo              : String(50);
+      mail_mod_nuevo          : String(50);
+      fecha_mod_nuevo         : Date @odata.Type:'Edm.String';
+      aprobado_nuevo          : String(1);
+      fecha_oper_nuevo        : Date @odata.Type:'Edm.String';
+      hora_oper_nuevo         : String(8);
+      accion                  : String(10);
+      fecha_modificacion      : Timestamp;
+      usuario_modificacion    : String(100);
 }

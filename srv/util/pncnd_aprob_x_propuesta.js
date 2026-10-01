@@ -1,5 +1,9 @@
 const { readFromTable }     = require('../lib/readFromTable')
-const { registrarAuditoria } = require('./auditoria')
+const { registrarAuditoria, insertarAuditoria, getEmailUsuario } = require('./auditoria')
+
+// La audit guarda la clave sin versionar y versiona solo los campos no clave
+const AUDIT_CLAVES = ['id_propuesta', 'id_lote', 'nivel', 'orden']
+const AUDIT_CAMPOS = ['id_tipo_aprob', 'mail', 'mail_mod', 'fecha_mod', 'aprobado', 'fecha_oper', 'hora_oper']
 
 module.exports = (srv, T) => {
 
@@ -74,14 +78,16 @@ module.exports = (srv, T) => {
         const aParamsUpdate = [...aParamsConteo, fecha_mod]
 
         try {
-            // db.run sobre un UPDATE crudo no devuelve un contador confiable, así que
-            // el conteo sale de un SELECT previo. Ambas corren en la transacción que
-            // CAP abre por request, de modo que nadie puede modificar nada en el medio.
-            const aConteo = await cds.db.run(
-                `SELECT COUNT(*) AS cnt FROM ${T('pncnd_aprob_x_propuesta')} ${sWhere}`,
+            // Leer las filas que van a cambiar sirve para dos cosas: contar (db.run
+            // sobre un UPDATE crudo no devuelve un contador confiable) y quedarse con
+            // el estado anterior para la auditoría. Todo corre en la transacción que
+            // CAP abre por request, así que nadie puede modificar nada en el medio.
+            const aPrevias = await cds.db.run(
+                `SELECT * FROM ${T('pncnd_aprob_x_propuesta')} ${sWhere}`,
                 aParamsConteo
-            )
-            const iModificados = parseInt(aConteo?.[0]?.cnt, 10) || 0
+            ) || []
+
+            const iModificados = aPrevias.length
 
             // mail_mod toma el valor previo de la propia columna; el <> filtra
             // los que ya tenían ese aprobador sin necesidad de chequearlo antes
@@ -93,6 +99,20 @@ module.exports = (srv, T) => {
                  ${sWhere}`,
                 aParamsUpdate
             )
+
+            // El UPDATE es determinístico: el estado nuevo se deriva del anterior
+            // sin necesidad de releer las filas.
+            await insertarAuditoria(cds.db, {
+                tablaAudit    : T('pncnd_aprob_x_propuesta_audit'),
+                columnasClave : AUDIT_CLAVES,
+                campos        : AUDIT_CAMPOS,
+                accion        : 'UPDATE',
+                usuario       : getEmailUsuario(req) || req.user?.id,
+                filas         : aPrevias.map((oPrevia) => ({
+                    anterior: oPrevia,
+                    nuevo   : { ...oPrevia, mail_mod: oPrevia.mail, mail, fecha_mod }
+                }))
+            })
 
             return {
                 modificados: iModificados,
@@ -120,25 +140,47 @@ module.exports = (srv, T) => {
             day:      '2-digit'
         }).format(now);
     
+        const aClavePk = [id_propuesta, id_lote, nivel, orden];
+        const sWherePk = `WHERE id_propuesta = $1::int
+                            AND id_lote      = $2::int
+                            AND nivel        = $3::int
+                            AND orden        = $4::int`;
+
         try {
-            const result = await cds.db.run(
-                `UPDATE PNCND_APROB_X_PROPUESTA
-                 SET mail_mod  = $1,
-                     mail      = $2,
-                     fecha_mod = $3
-                 WHERE id_propuesta = $4::int
-                   AND id_lote      = $5::int
-                   AND nivel        = $6::int
-                   AND orden        = $7::int`,
-                [mail_mod, mail, fecha_mod, id_propuesta, id_lote, nivel, orden]
+            // db.run sobre un UPDATE crudo no devuelve un contador confiable: la
+            // existencia del registro y su estado previo salen de este SELECT.
+            const [oPrevia] = await cds.db.run(
+                `SELECT * FROM ${T('pncnd_aprob_x_propuesta')} ${sWherePk}`,
+                aClavePk
             );
-    
-            if (result === 0) {
+
+            if (!oPrevia) {
                 return req.error(404, 'No se encontró el registro a modificar');
             }
-    
+
+            await cds.db.run(
+                `UPDATE ${T('pncnd_aprob_x_propuesta')}
+                 SET mail_mod  = $5,
+                     mail      = $6,
+                     fecha_mod = $7
+                 ${sWherePk}`,
+                [...aClavePk, mail_mod, mail, fecha_mod]
+            );
+
+            await insertarAuditoria(cds.db, {
+                tablaAudit    : T('pncnd_aprob_x_propuesta_audit'),
+                columnasClave : AUDIT_CLAVES,
+                campos        : AUDIT_CAMPOS,
+                accion        : 'UPDATE',
+                usuario       : getEmailUsuario(req) || req.user?.id,
+                filas         : [{
+                    anterior: oPrevia,
+                    nuevo   : { ...oPrevia, mail_mod, mail, fecha_mod }
+                }]
+            });
+
             return { mensaje: 'Aprobador modificado con éxito' };
-    
+
         } catch (error) {
             console.error('Error en modificarAprobador:', error);
             return req.error(500, 'Error interno al modificar el aprobador');
