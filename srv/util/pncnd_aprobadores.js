@@ -42,15 +42,11 @@ module.exports = (srv, T) => {
         return req.data
     })
 
-    // Listo para cuando exista pncnd_aprobadores_audit en PostgreSQL: descomentar.
-    // Se deja inactivo a propósito — la auditoría se inserta dentro de la misma
-    // transacción que el CRUD, así que apuntar a una tabla inexistente haría
-    // fallar todo alta, modificación y baja de aprobadores.
-    // registrarAuditoria(srv, {
-    //     entidad     : 'PNCND_APROBADORES',
-    //     tablaFuente : T('pncnd_aprobadores'),
-    //     tablaAudit  : T('pncnd_aprobadores_audit'),
-    //     claves      : ['mail'],
-    //     campos      : ['mail', 'id_tipo_aprob', 'nombre']
-    // })
+    registrarAuditoria(srv, {
+        entidad     : 'PNCND_APROBADORES',
+        tablaFuente : T('pncnd_aprobadores'),
+        tablaAudit  : T('pncnd_aprobadores_audit'),
+        claves      : ['mail'],
+        campos      : ['mail', 'id_tipo_aprob', 'nombre']
+    })
 }

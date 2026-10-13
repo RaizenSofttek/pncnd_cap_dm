@@ -19,6 +19,21 @@ entity PNCND_APROBADORES {
 }
 
 @cds.persistence.exists
+@cds.persistence.name: 'pncnd_aprobadores_audit'
+entity PNCND_APROBADORES_AUDIT {
+  key id                     : Integer64;
+      mail_anterior          : String(50);
+      id_tipo_aprob_anterior : String(2);
+      nombre_anterior        : String(100);
+      mail_nuevo             : String(50);
+      id_tipo_aprob_nuevo    : String(2);
+      nombre_nuevo           : String(100);
+      accion                 : String(10);
+      fecha_modificacion     : Timestamp;
+      usuario_modificacion   : String(100);
+}
+
+@cds.persistence.exists
 @cds.persistence.name: 'pncnd_aprob_x_of_ventas'
 entity PNCND_APROB_X_OF_VENTAS {
   key vkorg         : String(4);
