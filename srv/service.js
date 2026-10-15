@@ -12,6 +12,7 @@ const T = (tabla) => `${SCHEMA}.${tabla}`
 module.exports = cds.service.impl(async function () {
     require('./util/pncnd_tablas_maestras')(this, T)
     require('./util/pncnd_aprobadores')(this, T)
+    require('./util/pncnd_aprobadores_audit')(this, T)
     require('./util/pncnd_aprob_x_of_ventas')(this, T)
     require('./util/pncnd_aprob_x_funcion')(this, T)
     require('./util/pncnd_clientes')(this, T)
